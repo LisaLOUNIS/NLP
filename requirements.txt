@@ -4,6 +4,9 @@ streamlit==1.2.0  # Utilisez la version de Streamlit qui convient à votre proje
 # NLTK
 nltk==3.6.3  # Remplacez par la version que vous utilisez
 
+spacy
+sentencepiece
+
 # Autres dépendances
 # pandas==1.3.3
 # numpy==1.21.2
