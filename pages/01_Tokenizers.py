@@ -10,27 +10,30 @@ def run():
     st.markdown("""
     <style>
     .reportview-container {
-        background-color: #f0f0f5;
+        background-color: #DFF8EB;  /* Vert clair */
     }
-    .big-font {
-        font-size:22px !important;
+    h1 {
+        color: #000000;  /* Noir */
+    }
+    p {
+        color: #000000;  /* Noir */
     }
     </style>
     """, unsafe_allow_html=True)
     
     st.markdown("""
-    <h1 style='text-align: center; color: #646464;'>Testeur de Tokenizers en NLP</h1>
+    <h1 style='text-align: center;'>Testeur de Tokenizers en NLP</h1>
     """, unsafe_allow_html=True)
 
     # Téléchargement du modèle Punkt pour NLTK
     nltk.download('punkt')
 
     # Champ de texte pour l'input utilisateur
-    st.markdown("<p class='big-font'>Entrez le texte à tokenizer :</p>", unsafe_allow_html=True)
+    st.markdown("<p>Entrez le texte à tokenizer :</p>", unsafe_allow_html=True)
     text_input = st.text_area("", height=200)
 
     # Choix du tokenizer
-    st.markdown("<p class='big-font'>Choisissez un tokenizer :</p>", unsafe_allow_html=True)
+    st.markdown("<p>Choisissez un tokenizer :</p>", unsafe_allow_html=True)
     tokenizer_choice = st.selectbox(
         "",
         ["Word Tokenize", "Whitespace Tokenize", "Treebank Word Tokenize", "WordPunct Tokenize", "Spacy Tokenize", "SentencePiece Tokenize"]
@@ -60,5 +63,5 @@ def run():
 
     # Affichage du résultat
     if text_input:
-        st.markdown("<h2 style='text-align: center; color: #646464;'>Texte tokenisé :</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center;'>Texte tokenisé :</h2>", unsafe_allow_html=True)
         st.write(tokenize_text(text_input, tokenizer_choice))
