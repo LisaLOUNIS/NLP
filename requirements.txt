@@ -5,6 +5,7 @@ streamlit==1.2.0  # Utilisez la version de Streamlit qui convient à votre proje
 nltk==3.6.3  # Remplacez par la version que vous utilisez
 
 spacy
+
 sentencepiece
 
 # Autres dépendances
