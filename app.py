@@ -10,7 +10,7 @@ page = st.sidebar.selectbox(
 # Importe le module Python correspondant à la page sélectionnée
 if page == "Home":
     home_module = importlib.import_module("Home")
-elif page == "Tokenization":
+elif page == "Tokenizations":
     token_module = importlib.import_module("pages.01_Tokenizers")
 elif page == "Lemming & Stemming":
     lemming_stemming_module = importlib.import_module("pages.02_Lemming_Stemming")
