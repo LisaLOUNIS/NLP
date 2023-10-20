@@ -1,19 +1,22 @@
+import importlib
 import streamlit as st
-from pages import tokenization, lemming_stemming  # Assurez-vous que ces modules sont importables
 
-# Titre principal
-st.title("NLP Toolbox")
+# Import dynamique du module Home
+Home = importlib.import_module("Home")
 
-# Sidebar pour navigation
-page = st.sidebar.selectbox(
-    "Choose a NLP task",
-    ("Home", "Tokenization", "Lemming & Stemming")
-)
+# Import dynamique des modules dans le dossier 'pages'
+tokenization = importlib.import_module("pages.01_Tokenizers")
+lemming_stemming = importlib.import_module("pages.02_Lemming_Stemming")
 
-# Contenu conditionnel
-if page == "Home":
-    st.write("Welcome to the NLP toolbox. Choose a task from the sidebar.")
-elif page == "Tokenization":
-    tokenization.run()  # Une fonction 'run' à définir dans votre module 'tokenization'
-elif page == "Lemming & Stemming":
-    lemming_stemming.run()  # Une fonction 'run' à définir dans votre module 'lemming_stemming'
+PAGES = {
+    "Home": Home,
+    "Tokenization": tokenization,
+    "Lemming and Stemming": lemming_stemming
+}
+
+st.sidebar.title("Navigation")
+selection = st.sidebar.radio("Go to", list(PAGES.keys()))
+
+# Appel dynamique de la page (module) sélectionnée
+page = PAGES[selection]
+page.run()  # Utilisation de .run() au lieu de .app()
