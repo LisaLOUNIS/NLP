@@ -4,7 +4,7 @@ import importlib
 # Ajoute un sélecteur pour naviguer entre les différentes pages de l'application
 page = st.sidebar.selectbox(
     "Choisir une page",
-    ["Home", "Tokenization", "Lemming & Stemming"]
+    ["Home", "Tokenizations", "Lemming & Stemming"]
 )
 
 # Importe le module Python correspondant à la page sélectionnée
