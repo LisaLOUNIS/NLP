@@ -9,7 +9,7 @@ tokenization = importlib.import_module("pages.01_Tokenizers")
 lemming_stemming = importlib.import_module("pages.02_Lemming_Stemming")
 text_similarity = importlib.import_module("pages.03_Text_Similarity")
 zipf_law_verification = importlib.import_module("pages.04_Zipf's_law_verification")
-text_cleaning = importlib.import_module("page.05_text_cleaning")
+text_cleaning = importlib.import_module("pages.05_text_cleaning")
 
 PAGES = {
     "Home": Home,
