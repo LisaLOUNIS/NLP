@@ -1,43 +1,57 @@
 import streamlit as st
-import collections
-import matplotlib.pyplot as plt
-import numpy as np
+import string
+import re
+from nltk.corpus import stopwords
 
-def verify_zipf_law(text):
-    words = text.split()
-    freq_counter = collections.Counter(words)
-    sorted_freq = sorted(freq_counter.values(), reverse=True)
-    
-    ranks = np.arange(1, len(sorted_freq) + 1)
-    frequencies = np.array(sorted_freq)
-    
-    fig, ax = plt.subplots(figsize=(12, 6))  # Crée une nouvelle figure et des axes
-    ax.scatter(ranks, frequencies, color='blue')
-    ax.set_title("Zipf's Law")
-    ax.set_xlabel("Rank of the word")
-    ax.set_ylabel("Frequency")
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.grid(True)
-    st.pyplot(fig)  # Passe la figure à Streamlit
+# Initialisez les mots vides de NLTK
+stop_words = set(stopwords.words('english'))
 
+# Fonction pour convertir le texte en minuscules
+def convert_to_lowercase(text):
+    return text.lower()
+
+# Fonction pour supprimer les mots vides
+def remove_stop_words(text):
+    return " ".join([word for word in text.split() if word.lower() not in stop_words])
+
+# Fonction pour supprimer la ponctuation
+def remove_punctuation(text):
+    return text.translate(str.maketrans('', '', string.punctuation))
+
+# Fonction pour supprimer les espaces blancs supplémentaires
+def trim_extra_whitespace(text):
+    return re.sub(' +', ' ', text).strip()
+
+# Fonction principale Streamlit
 def run():
-    st.title("Verification of Zipf's Law")
-    st.write("This application verifies if Zipf's law holds for given articles.")
+    st.title("Text Cleaning Tool")
 
-    article_1 = st.text_area("Enter first article:", "")
-    article_2 = st.text_area("Enter second article:", "")
-    article_3 = st.text_area("Enter third article:", "")
-    
-    if st.button("Verify Zipf's Law"):
-        st.write("### Article 1")
-        verify_zipf_law(article_1)
+    user_input = st.text_area("Paste your text here for cleaning.", "")
+    options = st.multiselect(
+        "Select the cleaning operations to perform:",
+        ("Convert to Lowercase", "Remove Stop Words", "Remove Punctuation", "Trim Extra White Space"),
+    )
+
+    if st.button("Clean Text"):
+        cleaned_text = user_input
+
+        if "Convert to Lowercase" in options:
+            cleaned_text = convert_to_lowercase(cleaned_text)
         
-        st.write("### Article 2")
-        verify_zipf_law(article_2)
+        if "Remove Stop Words" in options:
+            cleaned_text = remove_stop_words(cleaned_text)
+
+        if "Remove Punctuation" in options:
+            cleaned_text = remove_punctuation(cleaned_text)
+
+        if "Trim Extra White Space" in options:
+            cleaned_text = trim_extra_whitespace(cleaned_text)
         
-        st.write("### Article 3")
-        verify_zipf_law(article_3)
+        st.write("### Original Text")
+        st.write(user_input)
+
+        st.write("### Cleaned Text")
+        st.write(cleaned_text)
 
 if __name__ == "__main__":
     run()
