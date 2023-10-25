@@ -1,6 +1,8 @@
 from nltk.metrics import edit_distance, jaccard_distance
 import sklearn
 import streamlit as st
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
