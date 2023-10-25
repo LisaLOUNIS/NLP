@@ -11,16 +11,15 @@ def verify_zipf_law(text):
     ranks = np.arange(1, len(sorted_freq) + 1)
     frequencies = np.array(sorted_freq)
     
-    plt.figure(figsize=(12, 6))
-    plt.scatter(ranks, frequencies, color='blue')
-    plt.title("Zipf's Law")
-    plt.xlabel("Rank of the word")
-    plt.ylabel("Frequency")
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.grid(True)
-    
-    st.pyplot()
+    fig, ax = plt.subplots(figsize=(12, 6))  # Crée une nouvelle figure et des axes
+    ax.scatter(ranks, frequencies, color='blue')
+    ax.set_title("Zipf's Law")
+    ax.set_xlabel("Rank of the word")
+    ax.set_ylabel("Frequency")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.grid(True)
+    st.pyplot(fig)  # Passe la figure à Streamlit
 
 def run():
     st.title("Verification of Zipf's Law")
