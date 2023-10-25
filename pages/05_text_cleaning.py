@@ -4,19 +4,20 @@ import re
 import nltk
 from nltk.corpus import stopwords
 
-# Téléchargez le corpus de stopwords seulement s'il n'est pas déjà téléchargé
-try:
-    stop_words = set(stopwords.words('english'))
-except LookupError:
-    nltk.download('stopwords')
-    stop_words = set(stopwords.words('english'))
+# Fonction pour initialiser les stopwords
+def initialize_stopwords(lang):
+    try:
+        return set(stopwords.words(lang))
+    except LookupError:
+        nltk.download('stopwords')
+        return set(stopwords.words(lang))
 
 # Fonction pour convertir le texte en minuscules
 def convert_to_lowercase(text):
     return text.lower()
 
 # Fonction pour supprimer les mots vides (stop words)
-def remove_stop_words(text):
+def remove_stop_words(text, stop_words):
     return " ".join([word for word in text.split() if word.lower() not in stop_words])
 
 # Fonction pour supprimer la ponctuation
@@ -30,12 +31,18 @@ def trim_extra_whitespace(text):
 # Fonction principale Streamlit
 def run():
     st.title("Text Cleaning Tool")
-    user_input = st.text_area("Paste your text here for cleaning.", "")
+    
+    # Choix de la langue pour les stopwords
+    lang_choice = st.selectbox("Choose language for stopwords:", ["english", "french", "german", "spanish"])
+    stop_words = initialize_stopwords(lang_choice)
+    
+    user_input = st.text_area("Paste your text here for cleaning:", "")
+    
     options = st.multiselect(
         "Select the cleaning operations to perform:",
         ("Convert to Lowercase", "Remove Stop Words", "Remove Punctuation", "Trim Extra White Space"),
     )
-
+    
     if st.button("Clean Text"):
         cleaned_text = user_input
 
@@ -43,7 +50,7 @@ def run():
             cleaned_text = convert_to_lowercase(cleaned_text)
         
         if "Remove Stop Words" in options:
-            cleaned_text = remove_stop_words(cleaned_text)
+            cleaned_text = remove_stop_words(cleaned_text, stop_words)
 
         if "Remove Punctuation" in options:
             cleaned_text = remove_punctuation(cleaned_text)
