@@ -1,5 +1,5 @@
 from nltk.metrics import edit_distance, jaccard_distance
-import scikit-learn as sklearn
+import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
