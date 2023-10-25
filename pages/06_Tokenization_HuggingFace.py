@@ -10,7 +10,8 @@ def tokenize_text(model_name, text):
     return tokens, token_ids
 
 # Fonction principale Streamlit
-def main():
+def run():
+    
     st.title("Tokenization Methods by Hugging Face")
 
     # Sélection du modèle
@@ -34,4 +35,4 @@ def main():
         st.write(token_ids)
 
 if __name__ == "__main__":
-    main()
+    run()
