@@ -1,16 +1,21 @@
 import streamlit as st
 import string
 import re
+import nltk
 from nltk.corpus import stopwords
 
-# Initialisez les mots vides de NLTK
-stop_words = set(stopwords.words('english'))
+# Téléchargez le corpus de stopwords seulement s'il n'est pas déjà téléchargé
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
 
 # Fonction pour convertir le texte en minuscules
 def convert_to_lowercase(text):
     return text.lower()
 
-# Fonction pour supprimer les mots vides
+# Fonction pour supprimer les mots vides (stop words)
 def remove_stop_words(text):
     return " ".join([word for word in text.split() if word.lower() not in stop_words])
 
@@ -25,7 +30,6 @@ def trim_extra_whitespace(text):
 # Fonction principale Streamlit
 def run():
     st.title("Text Cleaning Tool")
-
     user_input = st.text_area("Paste your text here for cleaning.", "")
     options = st.multiselect(
         "Select the cleaning operations to perform:",
