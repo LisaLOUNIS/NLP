@@ -41,18 +41,27 @@ def scrap(url):
 def get_links(url):
     soup = BeautifulSoup(requests.get(url).text, "html.parser")
 
+    page_numbers = []
+    for a in soup.find('div', class_= "styles_paginationWrapper__fukEb styles_pagination__USObu").find_all('a', href=True):
+      if(a['name'].startswith('pagination-button-') and a.text.isnumeric()):
+          page_numbers.append(int(a.text))
+
     divs = soup.find_all('div', class_= "paper_paper__1PY90 paper_outline__lwsUX card_card__lQWDv card_noPadding__D8PcU styles_wrapper__2JOo2")
 
     links = []
-    for div in divs:
-        anchors = div.find_all('a', href=True)
-        for a in anchors:
-            href = a['href']
-            if href.startswith("/review/"):
-                links.append(href)
+
+    for i in range(1, max(page_numbers) + 1):
+      response = requests.get(f"{url}?page={i}")
+      web_page = response.text
+      soup = BeautifulSoup(web_page, "html.parser")
+      for div in divs:
+          anchors = div.find_all('a', href=True)
+          for a in anchors:
+              href = a['href']
+              if href.startswith("/review/"):
+                  links.append(href)
 
     return ["https://www.trustpilot.com" + link for link in links]
-
 
 # links for travel insurance company
 url = 'https://www.trustpilot.com/categories/travel_insurance_company'
