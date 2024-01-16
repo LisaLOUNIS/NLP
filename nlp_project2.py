@@ -8,7 +8,6 @@ def scrap(url):
   review_dates = []
   review_ratings = []
   review_texts = []
-  page_number = []
 
   soup = BeautifulSoup(requests.get(url).text, "html.parser")
   total_pages = (soup.find('a', {'name': 'pagination-button-last'}))
@@ -52,4 +51,9 @@ def get_links(url):
             if href.startswith("/review/"):
                 links.append(href)
 
-    links = ["https://www.trustpilot.com" + link for link in links]
+    return ["https://www.trustpilot.com" + link for link in links]
+
+
+# links for travel insurance company
+url = 'https://www.trustpilot.com/categories/travel_insurance_company'
+url_list = get_links(url)
