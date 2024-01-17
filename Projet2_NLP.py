@@ -13,27 +13,26 @@ def scrape_page(url):
     except Exception as e:
         print(f"Error occurred while fetching the webpage: {url}, Error: {e}")
         return []
-
+ 
     soup = BeautifulSoup(response.content, 'html.parser')
     reviews = []
-
 
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
 
-       # Extracting company name
+        # Extracting company name
         company_name_tag = review_block.find("span", class_="oa_obflink")
         company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
         review['company'] = company_name
-        
+
         # Extracting stars
         stars = review_block.find("div", class_="oa_stackLevel")
         review['stars'] = len(stars.find_all("i", class_="fas fa-star active")) if stars else "Pas noté"
-
+ 
         # Extracting author name
         author_name = review_block.find("span", itemprop="author")
         review['author'] = author_name.text if author_name else "No author"
-
+ 
         # Extracting comment date and formatting it using regular expression
         comment_date = review_block.find("div", class_="oa_date")
         if comment_date:
@@ -42,13 +41,13 @@ def scrape_page(url):
             review['date'] = match.group(0) if match else "No date"
         else:
             review['date'] = "No date"
-
+ 
         # Extracting review text
         review_text = review_block.find("h4", class_="oa_reactionText")
         review['review'] = review_text.text.strip() if review_text else "No text"
-
+ 
         reviews.append(review)
-
+ 
     return reviews
 
 def create_and_scrape_url(base_url, page_number):
@@ -59,7 +58,7 @@ def create_and_scrape_url(base_url, page_number):
     return scrape_page(url)
 
 # Base URL without the page number
-base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html', 'https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html',]
+base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html', 'https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html']
 
 # Define the number of pages you want to scrape
 number_of_pages = 40  # Adjust as needed
@@ -68,6 +67,7 @@ all_reviews = []
 
 # Use ThreadPoolExecutor for parallel scraping
 # Use ThreadPoolExecutor for parallel scraping
+# Create a set to keep track of scraped URLs
 scraped_urls = set()
 
 # Use ThreadPoolExecutor for parallel scraping
@@ -131,6 +131,8 @@ df_reviews['review_en'] = df_reviews['review'].apply(lambda x: translate_text_se
 # Display the DataFrame with the translated reviews
 print(df_reviews)
 
+df_reviews.to_csv('data_scrapped.csv', index=False)
+
 
 import string
 import nltk
@@ -148,53 +150,60 @@ def preprocess_text(df, text_column):
     df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
 
     # Tokenisation
-    df['avis_en_tokenized'] = df[text_column].apply(word_tokenize)
+    df['review_en_tokenized'] = df[text_column].apply(word_tokenize)
 
     # Suppression des stop words
     stop_words = set(stopwords.words('english'))
-    df['avis_en_no_stopwords'] = df['avis_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
+    df['review_en_no_stopwords'] = df['review_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
 
     # Lemmatisation
     lemmatizer = WordNetLemmatizer()
-    df['avis_en_lemmatized'] = df['avis_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+    df['review_en_lemmatized'] = df['review_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
 
     return df
 
-# Appliquer la fonction à votre DataFrame
-from collections import Counter
-all_data = preprocess_text(df_reviews, 'avis_en')
-# Après avoir appliqué preprocess_text
-all_words = [word for tokens in all_data['avis_en_lemmatized'] for word in tokens]
-word_freq = Counter(all_words)
-most_common_words = word_freq.most_common(10)
 
-print(most_common_words)
 
-from nltk.util import ngrams
 
-def extract_ngrams_from_tokenized_data(tokenized_data, num):
-    # Générer des n-grams à partir des listes de mots tokenisés
-    all_ngrams = [ngram for tokens in tokenized_data for ngram in ngrams(tokens, num)]
-    return all_ngrams
 
-# Appliquer la fonction de prétraitement
-all_data = preprocess_text(all_data, 'avis_en')
 
-# Générer des bigrammes à partir des données tokenisées et lemmatisées
-bigrams = extract_ngrams_from_tokenized_data(all_data['avis_en_lemmatized'], 2)
+# # Appliquer la fonction à votre DataFrame
+# from collections import Counter
+# all_data = preprocess_text(df_reviews, 'review_en')
+# # Après avoir appliqué preprocess_text
+# all_words = [word for tokens in all_data['review_en_lemmatized'] for word in tokens]
+# word_freq = Counter(all_words)
+# most_common_words = word_freq.most_common(10)
 
-# Compter la fréquence des bigrammes
-bigram_counts = Counter(bigrams)
-most_common_bigrams = bigram_counts.most_common(10)  # top 10 bigrammes
-print(most_common_bigrams)
+# print(most_common_words)
 
-# Générer des trigrammes à partir des données tokenisées et lemmatisées
-trigrams = extract_ngrams_from_tokenized_data(all_data['avis_en_lemmatized'], 3)
+# from nltk.util import ngrams
+
+# def extract_ngrams_from_tokenized_data(tokenized_data, num):
+#     # Générer des n-grams à partir des listes de mots tokenisés
+#     all_ngrams = [ngram for tokens in tokenized_data for ngram in ngrams(tokens, num)]
+#     return all_ngrams
+
+# # Appliquer la fonction de prétraitement
+# all_data = preprocess_text(all_data, 'review_en')
+
+# # Générer des bigrammes à partir des données tokenisées et lemmatisées
+# bigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 2)
+
+# # Compter la fréquence des bigrammes
+# bigram_counts = Counter(bigrams)
+# most_common_bigrams = bigram_counts.most_common(10)  # top 10 bigrammes
+# print(most_common_bigrams)
+
+# # Générer des trigrammes à partir des données tokenisées et lemmatisées
+# trigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 3)
 
 # Compter la fréquence des trigrammes
 trigram_counts = Counter(trigrams)
 most_common_trigrams = trigram_counts.most_common(10) 
 print(most_common_trigrams)
+
+
 
 
 
