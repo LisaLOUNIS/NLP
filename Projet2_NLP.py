@@ -56,7 +56,7 @@ def create_and_scrape_url(base_url, page_number):
 base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html','https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html']
 
 # Define the number of pages you want to scrape
-number_of_pages = 20  # Adjust as needed
+number_of_pages = 40  # Adjust as needed
 
 all_reviews = []
 
@@ -185,8 +185,6 @@ trigrams = extract_ngrams_from_tokenized_data(all_data['avis_en_lemmatized'], 3)
 trigram_counts = Counter(trigrams)
 most_common_trigrams = trigram_counts.most_common(10) 
 print(most_common_trigrams)
-
-
 
 
 
