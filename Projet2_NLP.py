@@ -68,6 +68,7 @@ all_reviews = []
 # Use ThreadPoolExecutor for parallel scraping
 # Use ThreadPoolExecutor for parallel scraping
 # Create a set to keep track of scraped URLs
+# Create an empty set to keep track of scraped URLs
 scraped_urls = set()
 
 # Use ThreadPoolExecutor for parallel scraping
