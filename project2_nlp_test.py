@@ -48,6 +48,11 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
+from nltk.util import ngrams
+
+def generate_trigrams(token_list):
+    return [' '.join(trigram) for trigram in ngrams(token_list, 3) if len(trigram) == 3]
+
 def preprocess_text(df, text_column):
     # Nettoyage de base du texte
     df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
@@ -63,41 +68,25 @@ def preprocess_text(df, text_column):
     lemmatizer = WordNetLemmatizer()
     df['avis_en_lemmatized'] = df['avis_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
 
+    # Création des trigrammes
+    df['trigrammes'] = df['avis_en_lemmatized'].apply(generate_trigrams)
+
     return df
 
-# Appliquer la fonction à votre DataFrame
-from collections import Counter
-all_data = preprocess_text(df_reviews, 'avis_en')
-# Après avoir appliqué preprocess_text
-all_words = [word for tokens in all_data['avis_en_lemmatized'] for word in tokens]
-word_freq = Counter(all_words)
-most_common_words = word_freq.most_common(10)
-
-print(most_common_words)
-
-from nltk.util import ngrams
-
-def extract_ngrams_from_tokenized_data(tokenized_data, num):
-    # Générer des n-grams à partir des listes de mots tokenisés
-    all_ngrams = [ngram for tokens in tokenized_data for ngram in ngrams(tokens, num)]
-    return all_ngrams
-
-# Appliquer la fonction de prétraitement
 all_data = preprocess_text(all_data, 'avis_en')
 
-# Générer des bigrammes à partir des données tokenisées et lemmatisées
-bigrams = extract_ngrams_from_tokenized_data(all_data['avis_en_lemmatized'], 2)
+print(all_data)
 
-# Compter la fréquence des bigrammes
-bigram_counts = Counter(bigrams)
-most_common_bigrams = bigram_counts.most_common(10)  # top 10 bigrammes
-print(most_common_bigrams)
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Générer des trigrammes à partir des données tokenisées et lemmatisées
-trigrams = extract_ngrams_from_tokenized_data(all_data['avis_en_lemmatized'], 3)
+# Joindre les trigrammes en une seule chaîne de caractères pour chaque avis
+all_data['trigrammes_joined'] = all_data['trigrammes'].apply(lambda x: ' '.join(x))
 
-# Compter la fréquence des trigrammes
-trigram_counts = Counter(trigrams)
-most_common_trigrams = trigram_counts.most_common(10) 
-print(most_common_trigrams)
+# Créer un objet TfidfVectorizer
+vectorizer = TfidfVectorizer()
+
+# Appliquer TF-IDF aux trigrammes joints
+tfidf_matrix = vectorizer.fit_transform(all_data['trigrammes_joined'])
+
+print(tfidf_matrix)
 

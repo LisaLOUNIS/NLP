@@ -17,9 +17,15 @@ def scrape_page(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     reviews = []
 
+
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
 
+       # Extracting company name
+        company_name_tag = review_block.find("span", class_="oa_obflink")
+        company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
+        review['company'] = company_name
+        
         # Extracting stars
         stars = review_block.find("div", class_="oa_stackLevel")
         review['stars'] = len(stars.find_all("i", class_="fas fa-star active")) if stars else "Pas noté"
@@ -53,7 +59,7 @@ def create_and_scrape_url(base_url, page_number):
     return scrape_page(url)
 
 # Base URL without the page number
-base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html','https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html']
+base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html', 'https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html',]
 
 # Define the number of pages you want to scrape
 number_of_pages = 40  # Adjust as needed
@@ -62,33 +68,37 @@ all_reviews = []
 
 # Use ThreadPoolExecutor for parallel scraping
 # Use ThreadPoolExecutor for parallel scraping
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    # Prepare a dictionary to hold the futures and corresponding URL info
-    future_to_url = {}
+scraped_urls = set()
 
+# Use ThreadPoolExecutor for parallel scraping
+with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
     # Loop over each base URL and each page number
     for base_url in base_urls:
         for page_number in range(1, number_of_pages + 1):
-            # Submit a new task to the executor: scraping a specific URL
-            future = executor.submit(create_and_scrape_url, base_url, page_number)
-            # Store this future in the dictionary with its corresponding URL info
-            future_to_url[future] = (base_url, page_number)
+            # Construct the URL
+            url = create_and_scrape_url(base_url, page_number)
 
-    # Process the results of the futures as they complete
-    for future in concurrent.futures.as_completed(future_to_url):
-        # Retrieve the URL info corresponding to this future
-        url_info = future_to_url[future]
-        try:
-            # Get the result of the future (the return value of the scraping function)
-            data = future.result()
-            # Extend the all_reviews list with the scraped data
-            all_reviews.extend(data)
-        except Exception as exc:
-            # If an error occurred, print the URL info and the error message
-            print('%r generated an exception: %s' % (url_info, exc))
+            # Check if the URL has already been scraped
+            if url in scraped_urls:
+                continue  # Skip this URL if it's already been processed
+
+            # Submit a new task to the executor: scraping a specific URL
+            future = executor.submit(scrape_page, url)
+
+            # Store this URL in the set of scraped URLs
+            scraped_urls.add(url)
+
+            # Process the results of the futures as they complete
+            try:
+                data = future.result()
+                all_reviews.extend(data)
+            except Exception as exc:
+                print('%r generated an exception: %s' % (url, exc))
+
 
 # Creating a DataFrame from the accumulated reviews
 df_reviews = pd.DataFrame(all_reviews)
+
 
 from deep_translator import GoogleTranslator
 
