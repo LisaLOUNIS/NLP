@@ -20,10 +20,11 @@ def scrape_page(url):
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
         # Extracting company name
-        company_name_tag = review_block.find("span", class_="oa_obflink")
-        company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
-        review['company'] = company_name
+        # company_name_tag = review_block.find("span", class_="oa_obflink")
+        # company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
+        # review['company'] = company_name
 
+        review['company'] = url
 
         # Extracting stars
         stars = review_block.find("div", class_="oa_stackLevel")
@@ -134,40 +135,36 @@ df_reviews['review_en'] = df_reviews['review'].apply(lambda x: translate_text_se
 # Display the DataFrame with the translated reviews
 print(df_reviews)
 
-df_reviews.to_csv('data_scrapped.csv', index=False)
+df_reviews.to_csv('data_scrapped_with_company.csv', index=False)
 
 
-import string
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+# import string
+# import nltk
+# from nltk.tokenize import word_tokenize
+# from nltk.corpus import stopwords
+# from nltk.stem import WordNetLemmatizer
 
-# Télécharger les packages nécessaires de nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# # Télécharger les packages nécessaires de nltkd
+# nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
 
-def preprocess_text(df, text_column):
-    # Nettoyage de base du texte
-    df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
+# def preprocess_text(df, text_column):
+#     # Nettoyage de base du texte
+#     df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
 
-    # Tokenisation
-    df['review_en_tokenized'] = df[text_column].apply(word_tokenize)
+#     # Tokenisation
+#     df['review_en_tokenized'] = df[text_column].apply(word_tokenize)
 
-    # Suppression des stop words
-    stop_words = set(stopwords.words('english'))
-    df['review_en_no_stopwords'] = df['review_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
+#     # Suppression des stop words
+#     stop_words = set(stopwords.words('english'))
+#     df['review_en_no_stopwords'] = df['review_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
 
-    # Lemmatisation
-    lemmatizer = WordNetLemmatizer()
-    df['review_en_lemmatized'] = df['review_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+#     # Lemmatisation
+#     lemmatizer = WordNetLemmatizer()
+#     df['review_en_lemmatized'] = df['review_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
 
-    return df
-
-
-
-
+#     return df
 
 
 # # Appliquer la fonction à votre DataFrame
@@ -202,9 +199,9 @@ def preprocess_text(df, text_column):
 # trigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 3)
 
 # Compter la fréquence des trigrammes
-trigram_counts = Counter(trigrams)
-most_common_trigrams = trigram_counts.most_common(10) 
-print(most_common_trigrams)
+# trigram_counts = Counter(trigrams)
+# most_common_trigrams = trigram_counts.most_common(10) 
+# print(most_common_trigrams)
 
 
 
