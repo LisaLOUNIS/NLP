@@ -99,7 +99,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
 # Creating a DataFrame from the accumulated reviews
 df_reviews = pd.DataFrame(all_reviews)
 
-
 from deep_translator import GoogleTranslator
 
 translator = GoogleTranslator(source='fr', target='en')
