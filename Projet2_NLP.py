@@ -19,11 +19,11 @@ def scrape_page(url):
 
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
-
         # Extracting company name
         company_name_tag = review_block.find("span", class_="oa_obflink")
         company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
         review['company'] = company_name
+
 
         # Extracting stars
         stars = review_block.find("div", class_="oa_stackLevel")
@@ -55,7 +55,8 @@ def create_and_scrape_url(base_url, page_number):
         url = base_url + str(page_number)
     else:
         url = base_url + "?page=" + str(page_number) if page_number > 1 else base_url
-    return scrape_page(url)
+    return url  # Return the URL string instead of the list of reviews
+
 
 # Base URL without the page number
 base_urls = ['https://www.opinion-assurances.fr/assureur-abeille-assurances.html?page=','https://www.opinion-assurances.fr/assureur-caisse-d-epargne.html','https://www.opinion-assurances.fr/assureur-axa.html', 'https://www.opinion-assurances.fr/assureur-allianz.html','https://www.opinion-assurances.fr/assureur-credit-mutuel.html','https://www.opinion-assurances.fr/assureur-direct-assurance.html','https://www.opinion-assurances.fr/assureur-matmut.html','https://www.opinion-assurances.fr/assureur-cnp-assurances.html','https://www.opinion-assurances.fr/assureur-generali.html','https://www.opinion-assurances.fr/assureur-harmonies-mutuelles.html','https://www.opinion-assurances.fr/assureur-mutex.html','https://www.opinion-assurances.fr/assureur-macif.html','https://www.opinion-assurances.fr/assureur-lcl.html','https://www.opinion-assurances.fr/assureur-gmf.html','https://www.opinion-assurances.fr/assureur-cic.html','https://www.opinion-assurances.fr/assureur-olivier-assurances.html','https://www.opinion-assurances.fr/assureur-societe-generale-assurances.html', 'https://www.opinion-assurances.fr/assureur-swiss-life.html','https://www.opinion-assurances.fr/assureur-malakoff-humanis.html','https://www.opinion-assurances.fr/assureur-gmf.html']
@@ -70,6 +71,7 @@ all_reviews = []
 # Create a set to keep track of scraped URLs
 # Create an empty set to keep track of scraped URLs
 scraped_urls = set()
+
 
 # Use ThreadPoolExecutor for parallel scraping
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -95,6 +97,7 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
                 all_reviews.extend(data)
             except Exception as exc:
                 print('%r generated an exception: %s' % (url, exc))
+
 
 
 # Creating a DataFrame from the accumulated reviews
