@@ -105,32 +105,33 @@ df_reviews = pd.DataFrame(all_reviews)
 
 from deep_translator import GoogleTranslator
 
+
 translator = GoogleTranslator(source='fr', target='en')
 
 def translate_text_segmented(text, translator, max_length=4900):
-    # Ensure text is a string
     text = str(text)
-    # Split the text into segments, ensuring each is within the character limit
     segments = []
     while text:
         if len(text) > max_length:
-            # Find nearest space to avoid cutting words
             split_index = text.rfind(' ', 0, max_length)
-            if split_index == -1:  # No space found, force split
-                split_index = max_length
+            split_index = split_index if split_index != -1 else max_length
             segments.append(text[:split_index])
-            text = text[split_index:].lstrip()  # Remove leading whitespace for the next segment
+            text = text[split_index:].lstrip()
         else:
             segments.append(text)
             break
-    # Translate each segment
-    translated_segments = [translator.translate(segment) for segment in segments]
-    # Combine the translated segments
+
+    translated_segments = []
+    for segment in segments:
+        try:
+            translated_segment = translator.translate(segment)
+            translated_segments.append(translated_segment)
+        except Exception as e:
+            print(f"Translation error for segment: {segment}, Error: {e}")
+            translated_segments.append(segment)  # Keep the original segment in case of an error
     return ' '.join(translated_segments)
 
-# Apply the segmented translation function to the 'text' column
 df_reviews['review_en'] = df_reviews['review'].apply(lambda x: translate_text_segmented(x, translator))
-
 # Display the DataFrame with the translated reviews
 print(df_reviews)
 
@@ -202,9 +203,9 @@ def preprocess_text(df, text_column):
 # trigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 3)
 
 # Compter la fréquence des trigrammes
-trigram_counts = Counter(trigrams)
-most_common_trigrams = trigram_counts.most_common(10) 
-print(most_common_trigrams)
+#trigram_counts = Counter(trigrams)
+#most_common_trigrams = trigram_counts.most_common(10) 
+#print(most_common_trigrams)
 
 
 
