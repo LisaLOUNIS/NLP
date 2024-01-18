@@ -1,0 +1,15 @@
+pandas
+numpy
+# symspellpy
+nltk
+spacy
+gensim
+scikit-learn
+textblob
+scipy
+wordcloud
+pyLDAvis
+matplotlib
+seaborn
+bokeh
+tensorflow

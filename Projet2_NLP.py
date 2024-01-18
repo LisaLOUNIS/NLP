@@ -20,10 +20,11 @@ def scrape_page(url):
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
         # Extracting company name
-        company_name_tag = review_block.find("span", class_="oa_obflink")
-        company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
-        review['company'] = company_name
+        # company_name_tag = review_block.find("span", class_="oa_obflink")
+        # company_name = company_name_tag.get_text(strip=True) if company_name_tag else "Unknown Company"
+        # review['company'] = company_name
 
+        review['company'] = url
 
         # Extracting stars
         stars = review_block.find("div", class_="oa_stackLevel")
@@ -105,111 +106,33 @@ df_reviews = pd.DataFrame(all_reviews)
 
 from deep_translator import GoogleTranslator
 
-
 translator = GoogleTranslator(source='fr', target='en')
 
 def translate_text_segmented(text, translator, max_length=4900):
+    # Ensure text is a string
     text = str(text)
+    # Split the text into segments, ensuring each is within the character limit
     segments = []
     while text:
         if len(text) > max_length:
+            # Find nearest space to avoid cutting words
             split_index = text.rfind(' ', 0, max_length)
-            split_index = split_index if split_index != -1 else max_length
+            if split_index == -1:  # No space found, force split
+                split_index = max_length
             segments.append(text[:split_index])
-            text = text[split_index:].lstrip()
+            text = text[split_index:].lstrip()  # Remove leading whitespace for the next segment
         else:
             segments.append(text)
             break
-
-    translated_segments = []
-    for segment in segments:
-        try:
-            translated_segment = translator.translate(segment)
-            translated_segments.append(translated_segment)
-        except Exception as e:
-            print(f"Translation error for segment: {segment}, Error: {e}")
-            translated_segments.append(segment)  # Keep the original segment in case of an error
+    # Translate each segment
+    translated_segments = [translator.translate(segment) for segment in segments]
+    # Combine the translated segments
     return ' '.join(translated_segments)
 
+# Apply the segmented translation function to the 'text' column
 df_reviews['review_en'] = df_reviews['review'].apply(lambda x: translate_text_segmented(x, translator))
+
 # Display the DataFrame with the translated reviews
 print(df_reviews)
 
-df_reviews.to_csv('data_scrapped.csv', index=False)
-
-
-import string
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-
-# Télécharger les packages nécessaires de nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-def preprocess_text(df, text_column):
-    # Nettoyage de base du texte
-    df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
-
-    # Tokenisation
-    df['review_en_tokenized'] = df[text_column].apply(word_tokenize)
-
-    # Suppression des stop words
-    stop_words = set(stopwords.words('english'))
-    df['review_en_no_stopwords'] = df['review_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
-
-    # Lemmatisation
-    lemmatizer = WordNetLemmatizer()
-    df['review_en_lemmatized'] = df['review_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
-
-    return df
-
-
-
-
-
-
-# # Appliquer la fonction à votre DataFrame
-# from collections import Counter
-# all_data = preprocess_text(df_reviews, 'review_en')
-# # Après avoir appliqué preprocess_text
-# all_words = [word for tokens in all_data['review_en_lemmatized'] for word in tokens]
-# word_freq = Counter(all_words)
-# most_common_words = word_freq.most_common(10)
-
-# print(most_common_words)
-
-# from nltk.util import ngrams
-
-# def extract_ngrams_from_tokenized_data(tokenized_data, num):
-#     # Générer des n-grams à partir des listes de mots tokenisés
-#     all_ngrams = [ngram for tokens in tokenized_data for ngram in ngrams(tokens, num)]
-#     return all_ngrams
-
-# # Appliquer la fonction de prétraitement
-# all_data = preprocess_text(all_data, 'review_en')
-
-# # Générer des bigrammes à partir des données tokenisées et lemmatisées
-# bigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 2)
-
-# # Compter la fréquence des bigrammes
-# bigram_counts = Counter(bigrams)
-# most_common_bigrams = bigram_counts.most_common(10)  # top 10 bigrammes
-# print(most_common_bigrams)
-
-# # Générer des trigrammes à partir des données tokenisées et lemmatisées
-# trigrams = extract_ngrams_from_tokenized_data(all_data['review_en_lemmatized'], 3)
-
-# Compter la fréquence des trigrammes
-#trigram_counts = Counter(trigrams)
-#most_common_trigrams = trigram_counts.most_common(10) 
-#print(most_common_trigrams)
-
-
-
-
-
-
-
+df_reviews.to_csv('data_scrapped_with_company.csv', index=False)
