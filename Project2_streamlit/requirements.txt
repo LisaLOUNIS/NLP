@@ -12,3 +12,4 @@ pyLDAvis
 matplotlib
 seaborn
 bokeh
+tensorflow
