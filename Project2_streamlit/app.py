@@ -28,7 +28,7 @@ def preprocess_review(review):
     # Prétraitement de l'avis
     review = review.lower()
     review = re.sub(r'[^\w\s]', '', review)
-    sequence = tokenizer.texts_to_sequences([str(review)])
+    sequence = tokenizer.texts_to_sequences([review])
     padded = pad_sequences(sequence, maxlen=67)  # Assurez-vous que maxlen correspond à votre configuration d'entraînement
     return padded
 
