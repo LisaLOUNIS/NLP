@@ -133,12 +133,84 @@ misclassified = all_data.loc[test_indices][all_data['sentiment'] != all_data['pr
 # Affichez des exemples d'avis mal classifiés
 print(misclassified[['review_en', 'sentiment', 'predicted_sentiment']].sample(10))
 
-
 joblib.dump(rf_model, 'sentiment_rf_model.pkl')
 joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
 
 
+##################################################### model 2###########################################
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, Flatten, Dense, Dropout
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+import numpy as np
+import re
 
+def preprocess_text(text):
+    # Convertir en minuscules
+    text = text.lower()
+    # Supprimer la ponctuation
+    text = re.sub(r'[^\w\s]', '', text)
+    # Optionnel: autres étapes de nettoyage...
+    return text
 
+# Appliquer la fonction de prétraitement à vos avis
+all_data['review_en_keras'] = all_data['review_en'].apply(preprocess_text)
+
+# Analyser la taille du vocabulaire
+word_counts = sum([len(set(review.split())) for review in all_data['review_en_keras']])
+print(f"Nombre total de mots uniques : {word_counts}")
+
+# Calculer la longueur moyenne ou médiane des avis
+review_lengths = [len(review.split()) for review in all_data['review_en_keras']]
+average_length = sum(review_lengths) / len(review_lengths)
+median_length = sorted(review_lengths)[len(review_lengths) // 2]
+print(f"Longueur moyenne des avis : {average_length}")
+print(f"Longueur médiane des avis : {median_length}")
+
+# Choisissez vocab_size et max_length en fonction de ces valeurs
+vocab_size = min(10000, word_counts)
+max_length = int(average_length)
+
+# Création et adaptation du tokenizer
+tokenizer = Tokenizer(num_words=vocab_size)
+tokenizer.fit_on_texts(all_data['review_en_keras'])
+sequences = tokenizer.texts_to_sequences(all_data['review_en_keras'])
+word_index = tokenizer.word_index
+print('Found %s unique tokens.' % len(word_index))
+
+# Padding des séquences pour qu'elles aient toutes la même longueur
+data = pad_sequences(sequences, maxlen=max_length)
+
+# Conversion des labels en numérique
+le = LabelEncoder()
+labels = le.fit_transform(all_data['sentiment'])
+labels = np.asarray(labels)
+
+# Séparation des données en ensembles d'entraînement et de test
+X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=42)
+
+# Construction du modèle avec Dropout pour réduire le surapprentissage
+model = Sequential()
+model.add(Embedding(vocab_size, 200, input_length=max_length))
+model.add(Dropout(0.8))
+model.add(Flatten())
+model.add(Dense(3, activation='softmax'))
+
+# Compilation du modèle
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Callbacks pour l'arrêt précoce et TensorBoard
+early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+tensorboard_callback = TensorBoard(log_dir='./logs')
+
+# Entraînement du modèle avec les callbacks
+model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test),
+          callbacks=[early_stopping, tensorboard_callback])
+
+model.save("keras_model.h5")
+joblib.dump(vectorizer, 'tokenizer.pkl')
 
 
