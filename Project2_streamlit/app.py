@@ -7,8 +7,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 # Charger les modèles et les outils nécessaires
-rf_model = joblib.load(r'Project2_streamlit\sentiment_rf_model.pkl')
-tfidf_vectorizer = joblib.load(r'Project2_streamlit\tfidf_vectorizer.pkl')
+rf_model = joblib.load(r'C:/Users/lisac/OneDrive/Documents/GitHub/NLP/Project2_streamlit/sentiment_rf_model.pkl')
+tfidf_vectorizer = joblib.load(r'C:\Users\lisac\OneDrive\Documents\GitHub\NLP\Project2_streamlit\tfidf_vectorizer.pkl')
 
 # Définir la fonction pour le modèle Random Forest
 def predict_sentiment_rf(review):
