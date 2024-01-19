@@ -4,6 +4,7 @@ import numpy as np
 import re 
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
 
 
 # Charger les modèles et les outils nécessaires
@@ -27,8 +28,6 @@ def preprocess_review(review):
     # Prétraitement de l'avis
     review = review.lower()
     review = re.sub(r'[^\w\s]', '', review)
-
-    # Tokenisation et padding
     sequence = tokenizer.texts_to_sequences([review])
     padded = pad_sequences(sequence, maxlen=128)  # Assurez-vous que maxlen correspond à votre configuration d'entraînement
     return padded
