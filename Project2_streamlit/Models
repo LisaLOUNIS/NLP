@@ -8,7 +8,7 @@ import streamlit as st
 
 
 # Read the CSV file into a Pandas DataFrame
-all_data = pd.read_csv(r"C:\Users\lisac\Downloads\data_scrapped_with_company.csv")
+all_data = pd.read_csv("data_scrapped_with_company.csv")
 nan_per_column = all_data.isnull().sum()
 print(nan_per_column)
 data_avis_cor_en_not_null = all_data[all_data['review_en'].notnull()]
