@@ -1,0 +1,144 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import datetime as dt
+import os
+import joblib
+import streamlit as st
+
+
+# Read the CSV file into a Pandas DataFrame
+all_data = pd.read_csv(r"C:\Users\lisac\Downloads\data_scrapped_with_company.csv")
+nan_per_column = all_data.isnull().sum()
+print(nan_per_column)
+data_avis_cor_en_not_null = all_data[all_data['review_en'].notnull()]
+print(data_avis_cor_en_not_null[['review','review_en']])
+# Remplacer 'avis_en' par 'avis_cor_en' lorsque 'avis_cor_en' n'est pas null
+#all_data['avis_en'] = all_data['avis_cor_en'].combine_first(all_data['avis_en'])
+#all_data['avis'] = all_data['avis_cor'].combine_first(all_data['avis'])
+#all_data.drop(['avis_cor', 'avis_cor_en'], axis=1, inplace=True)
+#all_data= all_data.dropna(subset=['avis_en'])
+print(all_data.columns)
+# Identifier les lignes dupliquées
+duplicate_rows = all_data[all_data.duplicated(keep=False)]
+# Trier par valeurs pour regrouper les duplicatas ensemble
+duplicate_rows_sorted = duplicate_rows.sort_values(by=list(all_data.columns))
+# Afficher les lignes dupliquées avec leurs premières occurrences
+print(duplicate_rows_sorted)
+#On supprime les doublons
+all_data = all_data.drop_duplicates()
+
+import string
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+
+# Télécharger les packages nécessaires de nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+from nltk.util import ngrams
+
+def generate_trigrams(token_list):
+    return [' '.join(trigram) for trigram in ngrams(token_list, 3) if len(trigram) == 3]
+
+def preprocess_text(df, text_column):
+    # Check for NaN values in the text column and replace them with empty strings
+    df[text_column] = df[text_column].fillna("").astype(str)
+
+    # Nettoyage de base du texte
+    df[text_column] = df[text_column].str.lower().str.translate(str.maketrans('', '', string.punctuation))
+
+    # Tokenisation
+    df['review_en_tokenized'] = df[text_column].apply(word_tokenize)
+
+    # Suppression des stop words
+    stop_words = set(stopwords.words('english'))
+    df['review_en_no_stopwords'] = df['review_en_tokenized'].apply(lambda x: [word for word in x if word not in stop_words])
+
+    # Lemmatisation
+    lemmatizer = WordNetLemmatizer()
+    df['review_en_lemmatized'] = df['review_en_no_stopwords'].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+
+    # Création des trigrammes
+    df['trigrammes'] = df['review_en_lemmatized'].apply(generate_trigrams)
+
+    return df
+
+
+all_data = preprocess_text(all_data, 'review_en')
+
+print(all_data)
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Joindre les trigrammes en une seule chaîne de caractères pour chaque avis
+all_data['trigrammes_joined'] = all_data['trigrammes'].apply(lambda x: ' '.join(x))
+
+# Créer un objet TfidfVectorizer
+vectorizer = TfidfVectorizer()
+
+# Appliquer TF-IDF aux trigrammes joints
+tfidf_matrix = vectorizer.fit_transform(all_data['trigrammes_joined'])
+
+print(tfidf_matrix)
+
+
+def stars_to_sentiment(number_of_stars):
+    if number_of_stars >= 4:  # Supposons que 4 et 5 étoiles sont positifs
+        return 'positif'
+    elif number_of_stars <= 2:  # Supposons que 1 et 2 étoiles sont négatifs
+        return 'negatif'
+    else:  # Supposons que 3 étoiles sont neutres
+        return 'neutre'
+
+# Appliquez la fonction pour créer une nouvelle colonne 'sentiment'
+all_data['sentiment'] = all_data['stars'].apply(stars_to_sentiment)
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
+# Séparation des données en ensembles d'entraînement et de test
+X = tfidf_matrix  # Vos features TF-IDF
+y = all_data['sentiment']  # Les labels que vous venez de créer
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+test_indices = y_test.index
+
+# Construction du modèle de machine learning
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
+
+# Prédiction des sentiments sur l'ensemble de test
+y_pred = rf_model.predict(X_test)
+
+all_data.loc[test_indices, 'predicted_sentiment'] = y_pred
+
+# Évaluation du modèle
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+
+# Filtrez pour voir où les prédictions ne correspondent pas aux labels réels
+misclassified = all_data.loc[test_indices][all_data['sentiment'] != all_data['predicted_sentiment']]
+
+# Affichez des exemples d'avis mal classifiés
+print(misclassified[['review_en', 'sentiment', 'predicted_sentiment']].sample(10))
+
+
+joblib.dump(rf_model, 'sentiment_rf_model.pkl')
+joblib.dump(vectorizer, 'tfidf_vectorizer.pkl')
+
+
+
+
+
+
