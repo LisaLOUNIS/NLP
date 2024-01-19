@@ -20,7 +20,7 @@ def predict_sentiment_rf(review):
 # model_keras = ... 
 
 # Chargement du modèle et du tokenizer
-model = load_model('model_keras.h5')
+model = load_model('keras_model.h5')
 tokenizer = joblib.load('tokenizer.pkl')
 
 def preprocess_review(review):
