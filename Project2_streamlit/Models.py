@@ -5,7 +5,8 @@ import datetime as dt
 import os
 import joblib
 import streamlit as st
-
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.callbacks import TensorBoard
 
 # Read the CSV file into a Pandas DataFrame
 all_data = pd.read_csv("data_scrapped_with_company.csv")
@@ -13,11 +14,7 @@ nan_per_column = all_data.isnull().sum()
 print(nan_per_column)
 data_avis_cor_en_not_null = all_data[all_data['review_en'].notnull()]
 print(data_avis_cor_en_not_null[['review','review_en']])
-# Remplacer 'avis_en' par 'avis_cor_en' lorsque 'avis_cor_en' n'est pas null
-#all_data['avis_en'] = all_data['avis_cor_en'].combine_first(all_data['avis_en'])
-#all_data['avis'] = all_data['avis_cor'].combine_first(all_data['avis'])
-#all_data.drop(['avis_cor', 'avis_cor_en'], axis=1, inplace=True)
-#all_data= all_data.dropna(subset=['avis_en'])
+
 print(all_data.columns)
 # Identifier les lignes dupliquées
 duplicate_rows = all_data[all_data.duplicated(keep=False)]
@@ -84,7 +81,6 @@ vectorizer = TfidfVectorizer()
 tfidf_matrix = vectorizer.fit_transform(all_data['trigrammes_joined'])
 
 print(tfidf_matrix)
-
 
 def stars_to_sentiment(number_of_stars):
     if number_of_stars >= 4:  # Supposons que 4 et 5 étoiles sont positifs
