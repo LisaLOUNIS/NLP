@@ -13,3 +13,5 @@ matplotlib
 seaborn
 bokeh
 tensorflow
+pytorch
+transformers
