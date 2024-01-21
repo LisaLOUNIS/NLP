@@ -5,6 +5,7 @@ nltk
 spacy
 gensim
 scikit-learn==1.3.2
+protobuf<4.24
 textblob
 scipy
 wordcloud
