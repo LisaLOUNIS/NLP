@@ -6,17 +6,25 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
-# Charger les modèles et les outils nécessaires pour l'analyse des sentiments
-rf_model = joblib.load('sentiment_rf_model.pkl')
-tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
-model = load_model('keras_model.h5')
-tokenizer = joblib.load('tokenizer.pkl')
+@st.cache(allow_output_mutation=True)
+def load_models():
+    rf_model = joblib.load('sentiment_rf_model.pkl')
+    tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
+    model = load_model('keras_model.h5')
+    tokenizer = joblib.load('tokenizer.pkl')
+    return rf_model, tfidf_vectorizer, model, tokenizer
+
+
+rf_model, tfidf_vectorizer, keras_model, tokenizer = load_models()
 
 # Importez vos fonctions de summary_model.py
 from text_summerization import get_summarizer, summarize_text
 
-# Charger le modèle de résumé (si vous souhaitez le charger une seule fois)
-summarizer = get_summarizer()
+def load_summarizer():
+    return get_summarizer()
+
+summarizer = load_summarizer()
+
 
 # Fonctions pour l'analyse des sentiments
 def predict_sentiment_rf(review):
@@ -33,7 +41,7 @@ def preprocess_review(review):
 
 def predict_sentiment_keras(review):
     review_padded = preprocess_review(review)
-    prediction = model.predict(review_padded)
+    prediction = keras_model.predict(review_padded)
     sentiment_labels = ['negatif', 'neutre', 'positif']
     return sentiment_labels[np.argmax(prediction)]
 
@@ -46,7 +54,7 @@ st.header("Analyse des Sentiments")
 user_review = st.text_area("Entrez votre avis pour l'analyse des sentiments", "")
 model_choice = st.selectbox("Choisissez le modèle de prédiction", ["Random Forest", "Keras"])
 
-# Bouton de prédiction pour l'analyse des sentiments
+
 if st.button('Prédire le Sentiment'):
     if model_choice == "Random Forest":
         sentiment = predict_sentiment_rf(user_review)
@@ -61,3 +69,4 @@ text_to_summarize = st.text_area("Entrez le texte à résumer", "")
 if st.button('Résumer le Texte'):
     summary = summarize_text(summarizer, text_to_summarize)
     st.write(summary)
+
