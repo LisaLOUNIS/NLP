@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
-@st.cache_data(allow_output_mutation=True)
+@st.experimental_memo(ttl=3600, max_entries=10)
 def load_models():
     rf_model = joblib.load('sentiment_rf_model.pkl')
     tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
