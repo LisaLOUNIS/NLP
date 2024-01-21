@@ -2,12 +2,11 @@ import joblib
 import streamlit as st
 import numpy as np
 import re 
+import transformers
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
-from transformers import pipeline
 
-from transformers import pipeline
 print("Import successful")
 
 # Charger les modèles et les outils nécessaires pour l'analyse des sentiments
@@ -17,7 +16,7 @@ model = load_model('keras_model.h5')
 tokenizer = joblib.load('tokenizer.pkl')
 
 # Charger le modèle de résumé
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+summarizer = transformers.pipeline("summarization", model="facebook/bart-large-cnn")
 
 # Fonctions pour l'analyse des sentiments
 def predict_sentiment_rf(review):
