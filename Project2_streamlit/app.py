@@ -7,6 +7,9 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from transformers import pipeline
 
+from transformers import pipeline
+print("Import successful")
+
 # Charger les modèles et les outils nécessaires pour l'analyse des sentiments
 rf_model = joblib.load('sentiment_rf_model.pkl')
 tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
