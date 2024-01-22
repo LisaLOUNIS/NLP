@@ -2,6 +2,7 @@ pandas
 numpy
 bs4
 streamlit
+pyspellchecker
 symspellpy
 nltk
 spacy

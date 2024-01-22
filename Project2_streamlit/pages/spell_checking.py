@@ -1,6 +1,7 @@
 import streamlit as st
 from symspellpy import SymSpell, Verbosity
 import pandas as pd
+from spellchecker import SpellChecker
 
 st.title('Correcteur orthographique')
 
@@ -22,6 +23,8 @@ def spell_check(word_list):
 # Boîte de saisie
 user_input = st.text_input('Saisissez du texe en français :')
 
+st.write("# SymSpellCheck")
+
 # Affichage des suggestions de correction
 if user_input:
     spell_dict = spell_check(user_input.split())
@@ -30,3 +33,16 @@ if user_input:
         df = pd.DataFrame(suggestions[:5], columns=[word])
         col.dataframe(df, hide_index=True)
 
+
+st.write("# Spell Checker")
+
+spell = SpellChecker(language='fr')  # pour le français
+
+if user_input:
+    words = user_input.split()
+    misspelled = spell.unknown(words)
+    cols = st.columns(len(misspelled))
+    for col, word in zip(cols, misspelled):
+        suggestions = spell.candidates(word)
+        df = pd.DataFrame(list(suggestions)[:5], columns=[word])
+        col.dataframe(df, hide_index=True)
