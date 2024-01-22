@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_tags import st_tags
 from symspellpy import SymSpell, Verbosity
 
 st.title('Correcteur orthographique')
