@@ -25,3 +25,6 @@ user_input = st.text_input('Saisissez du texe en français :')
 if user_input:
     spell_dict = spell_check(user_input.split())
     st.write(spell_dict)
+
+import os
+st.write(os.getcwd())
