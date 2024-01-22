@@ -6,9 +6,14 @@ from spellchecker import SpellChecker
 st.title('Correcteur orthographique')
 
 # Initialisation de SymSpell
-sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
-dictionary_path = "fr-100k.txt"  
-sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+@st.cache_data(allow_output_mutation=True)
+def load_sym_spell():
+    sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+    dictionary_path = "fr-100k.txt"  
+    sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+    return sym_spell
+
+sym_spell = load_sym_spell()
 
 def spell_check(word_list):
     corrected_dict = {}
