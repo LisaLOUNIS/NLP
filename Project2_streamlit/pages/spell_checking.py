@@ -8,12 +8,21 @@ sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
 dictionary_path = "../fr-100k.txt"  # Remplacez par le chemin vers votre dictionnaire français
 sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
 
+def spell_check(word_list):
+    corrected_dict = {}
+    for word in word_list:
+        suggestions = sym_spell.lookup(word, Verbosity.ALL, max_edit_distance=2)
+        if suggestions:
+            corrected_dict[word] = [suggestion.term for suggestion in suggestions]
+        else:
+            corrected_dict[word] = []
+    return corrected_dict
+
 # Boîte de saisie
-user_input = st.text_input('Entrez un mot :')
+user_input = st.text_input('Saisissez du texe en français :')
 
 # Affichage des suggestions de correction
 if user_input:
-    suggestions = sym_spell.lookup(user_input, Verbosity.CLOSEST, max_edit_distance=2)
-    st.write(f'Suggestions de correction pour "{user_input}" :')
-    for suggestion in suggestions:
-        st.write(suggestion.term)
+    spell_dict = spell_check(user_input.split())
+    for word, suggestions in spell_dict:
+        st.write(f"{word}: {suggestions}")
