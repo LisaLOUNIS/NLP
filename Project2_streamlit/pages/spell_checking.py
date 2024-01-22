@@ -6,7 +6,7 @@ from spellchecker import SpellChecker
 st.title('Correcteur orthographique')
 
 # Initialisation de SymSpell
-@st.cache_data(allow_output_mutation=True)
+@st.cache_data()
 def load_sym_spell():
     sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
     dictionary_path = "fr-100k.txt"  
