@@ -1,5 +1,6 @@
 import streamlit as st
 from symspellpy import SymSpell, Verbosity
+import pandas as pd
 
 st.title('Correcteur orthographique')
 
@@ -25,4 +26,5 @@ user_input = st.text_input('Saisissez du texe en français :')
 if user_input:
     spell_dict = spell_check(user_input.split())
     for word, suggestions in spell_dict.items():
-        st.write(f"{word} : {', '.join(suggestions[:5])}")
+        st.write(f"Suggestions pour '{word}':")
+        st.table(pd.DataFrame(suggestions[:5], columns=['Suggestions']))
