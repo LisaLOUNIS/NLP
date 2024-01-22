@@ -25,6 +25,8 @@ user_input = st.text_input('Saisissez du texe en français :')
 # Affichage des suggestions de correction
 if user_input:
     spell_dict = spell_check(user_input.split())
-    for word, suggestions in spell_dict.items():
-        st.write(f"{word}:")
-        st.dataframe(pd.DataFrame(suggestions[:5], columns=['Suggestions']), hide_index=True)
+    cols = st.beta_columns(len(spell_dict))
+    for col, (word, suggestions) in zip(cols, spell_dict.items()):
+        df = pd.DataFrame(suggestions[:5], columns=[word])
+        col.dataframe(df, hide_index=True)
+
