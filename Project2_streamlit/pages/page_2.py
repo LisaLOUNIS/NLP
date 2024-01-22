@@ -6,7 +6,7 @@ st.title('Correcteur orthographique')
 
 # Initialisation de SymSpell
 sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
-dictionary_path = "fr-100k.txt"  # Remplacez par le chemin vers votre dictionnaire français
+dictionary_path = "../fr-100k.txt"  # Remplacez par le chemin vers votre dictionnaire français
 sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
 
 # Boîte de saisie avec suggestions
