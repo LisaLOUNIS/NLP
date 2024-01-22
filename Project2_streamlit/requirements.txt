@@ -2,7 +2,7 @@ pandas
 numpy
 bs4
 streamlit
-# symspellpy
+symspellpy
 nltk
 spacy
 gensim
