@@ -27,4 +27,4 @@ if user_input:
     spell_dict = spell_check(user_input.split())
     for word, suggestions in spell_dict.items():
         st.write(f"Suggestions pour '{word}':")
-        st.table(pd.DataFrame(suggestions[:5], columns=['Suggestions']))
+        st.dataframe(pd.DataFrame(suggestions[:5], columns=['Suggestions']), hide_index=True)
