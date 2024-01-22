@@ -40,9 +40,8 @@ spell = SpellChecker(language='fr')  # pour le français
 
 if user_input:
     words = user_input.split()
-    misspelled = spell.unknown(words)
-    cols = st.columns(len(misspelled))
-    for col, word in zip(cols, misspelled):
+    cols = st.columns(len(words))
+    for col, word in zip(cols, words):
         suggestions = spell.candidates(word)
         df = pd.DataFrame(list(suggestions)[:5], columns=[word])
         col.dataframe(df, hide_index=True)
