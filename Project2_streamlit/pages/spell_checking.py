@@ -26,5 +26,5 @@ user_input = st.text_input('Saisissez du texe en français :')
 if user_input:
     spell_dict = spell_check(user_input.split())
     for word, suggestions in spell_dict.items():
-        st.write(f"Suggestions pour '{word}':")
+        st.write(f"{word}:")
         st.dataframe(pd.DataFrame(suggestions[:5], columns=['Suggestions']), hide_index=True)
