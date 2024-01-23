@@ -58,12 +58,36 @@ def scrape_page(url):
         else:
             review['date'] = "No date"
  
-        
- 
     return reviews
+
+def scrape_nb_pages(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    pagination_div = soup.find('div', {'class': 'table oa_pagination'})
+
+    if pagination_div is None:
+        return 1
+
+    right_div = pagination_div.find('div', {'class': 'oa_right'})
+    if right_div is None:
+        return 1
+
+    last_page_link = right_div.find('a', {'title': 'Allez à la dernière page'})
+    if last_page_link is None:
+        return 1
+
+    href = last_page_link.get('href')
+    match = re.search(r'page(\d+).html', href)
+    if match is None:
+        return 1
+
+    nb_pages = int(match.group(1))
+    return nb_pages
+
 
 # Scrape the selected URL
 reviews = scrape_page(link_dict[option])
+nb_pages = scrape_nb_pages(link_dict[option])
 
 # Creating a DataFrame from the reviews
 df_reviews = pd.DataFrame(reviews)
@@ -73,6 +97,6 @@ df_reviews['company'] = df_reviews['company'].str.replace(r'\.html.*$', '', rege
 df_reviews['company'] = df_reviews['company'].str.replace('-', ' ', regex=True)
 
 st.write(link_dict[option])
-
+st.write(nb_pages)
 # Display the DataFrame in Streamlit
 st.write(df_reviews)
