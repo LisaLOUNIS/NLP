@@ -87,7 +87,15 @@ def scrape_nb_pages(url):
 
 # Scrape the selected URL
 reviews = scrape_page(link_dict[option])
+st.write(link_dict[option])
+
 nb_pages = scrape_nb_pages(link_dict[option])
+
+page = st.selectbox('Choisissez une page', [i for i in range(1, nb_pages + 1)])
+
+# Scrape the selected page
+url = f"{link_dict[option]}?page={page}"
+reviews = scrape_page(url)
 
 # Creating a DataFrame from the reviews
 df_reviews = pd.DataFrame(reviews)
@@ -96,7 +104,5 @@ df_reviews['company'] = df_reviews['company'].str.replace(r'^https://www.opinion
 df_reviews['company'] = df_reviews['company'].str.replace(r'\.html.*$', '', regex=True)
 df_reviews['company'] = df_reviews['company'].str.replace('-', ' ', regex=True)
 
-st.write(link_dict[option])
-st.write(nb_pages)
 # Display the DataFrame in Streamlit
 st.write(df_reviews)
