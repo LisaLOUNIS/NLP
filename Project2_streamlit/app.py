@@ -42,7 +42,7 @@ st.title('Analyse de Sentiment et Résumé des Avis d’Assurance')
  
 # Entrée utilisateur pour l'analyse des sentiments
 st.header("Analyse des Sentiments")
-user_review = st.text_area("Entrez votre avis pour l'analyse des sentiments", "")
+user_review = st.text_area("Entrez votre avis en anglais pour l'analyse des sentiments", "")
 model_choice = st.selectbox("Choisissez le modèle de prédiction", ["Random Forest", "Keras"])
  
  
