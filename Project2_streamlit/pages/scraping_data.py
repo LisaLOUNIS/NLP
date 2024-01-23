@@ -11,6 +11,8 @@ soup = BeautifulSoup(response.text, 'html.parser')
 
 links = soup.find_all('a', onclick=True)
 
+link_dict = {link.get_text(): 'https://www.opinion-assurances.fr' + link.get('href') for link in links if link.get('href').startswith('/assureur')}
+
 urls = [link.get('href') for link in links if link.get('href').startswith('/assureur')]
 
 full_urls = ['https://www.opinion-assurances.fr' + url for url in urls]
@@ -18,7 +20,7 @@ full_urls = ['https://www.opinion-assurances.fr' + url for url in urls]
 # Créer un menu déroulant dans Streamlit
 option = st.selectbox(
     'Choisissez une URL',
-    full_urls)
+    list(link_dict.keys()))
 
 def scrape_page(url):
     try:
@@ -61,7 +63,7 @@ def scrape_page(url):
     return reviews
 
 # Scrape the selected URL
-reviews = scrape_page(option)
+reviews = scrape_page(link_dict[option])
 
 # Creating a DataFrame from the reviews
 df_reviews = pd.DataFrame(reviews)
