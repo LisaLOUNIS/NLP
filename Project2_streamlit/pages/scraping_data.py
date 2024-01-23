@@ -35,6 +35,11 @@ def scrape_page(url):
 
     for review_block in soup.find_all("div", class_="oa_reactionBlock"):
         review = {}
+
+        review_text = review_block.find("h4", class_="oa_reactionText")
+        review['review'] = review_text.text.strip() if review_text else "No text"
+        reviews.append(review)
+
         review['company'] = url
 
         stars = review_block.find("div", class_="oa_stackLevel")
@@ -51,10 +56,7 @@ def scrape_page(url):
         else:
             review['date'] = "No date"
  
-        review_text = review_block.find("h4", class_="oa_reactionText")
-        review['review'] = review_text.text.strip() if review_text else "No text"
- 
-        reviews.append(review)
+        
  
     return reviews
 
