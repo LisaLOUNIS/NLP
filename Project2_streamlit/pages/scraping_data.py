@@ -72,5 +72,7 @@ df_reviews['company'] = df_reviews['company'].str.replace(r'^https://www.opinion
 df_reviews['company'] = df_reviews['company'].str.replace(r'\.html.*$', '', regex=True)
 df_reviews['company'] = df_reviews['company'].str.replace('-', ' ', regex=True)
 
+st.write(link_dict[option])
+
 # Display the DataFrame in Streamlit
 st.write(df_reviews)
