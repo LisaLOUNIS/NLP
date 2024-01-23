@@ -64,5 +64,9 @@ reviews = scrape_page(option)
 # Creating a DataFrame from the reviews
 df_reviews = pd.DataFrame(reviews)
 
+df_reviews['company'] = df_reviews['company'].str.replace(r'^https://www.opinion-assurances.fr/assureur-', '', regex=True)
+df_reviews['company'] = df_reviews['company'].str.replace(r'\.html.*$', '', regex=True)
+df_reviews['company'] = df_reviews['company'].str.replace('-', ' ', regex=True)
+
 # Display the DataFrame in Streamlit
 st.write(df_reviews)
