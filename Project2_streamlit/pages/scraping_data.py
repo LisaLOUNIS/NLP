@@ -2,23 +2,20 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 
+url_all = "https://www.opinion-assurances.fr/tous-les-assureurs.html"
 
-# assureur_auto = ['olivier-assurances-assurance-auto', 'assureur-allianz-assurance-auto']
-# assureur_sante = ['mgp-assurance-sante', 'april-assurance-sante']
-
-# base_url = 'https://www.opinion-assurances.fr'
-
-url = "https://www.opinion-assurances.fr/tous-les-assureurs.html"
-
-response = requests.get(url)
+response = requests.get(url_all)
 soup = BeautifulSoup(response.text, 'html.parser')
 
-# Trouver tous les éléments <a> avec un attribut 'onclick'
 links = soup.find_all('a', onclick=True)
 
-# Extraire les URLs (href) de ces éléments
-urls = [link.get('href') for link in links]
+urls = [link.get('href') for link in links if link.get('href').startswith('/assureur')]
 
-# Afficher les URLs
-for url in urls:
-    st.write(url)
+full_urls = ['https://www.opinion-assurances.fr' + url for url in urls]
+
+# Créer un menu déroulant dans Streamlit
+option = st.selectbox(
+    'Choisissez une URL',
+    full_urls)
+
+st.write('Vous avez sélectionné l\'URL:', option)
