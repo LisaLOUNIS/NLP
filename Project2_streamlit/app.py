@@ -11,7 +11,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 def load_models():
     rf_model = joblib.load('sentiment_rf_model.pkl')
     tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
-    model = load_model('keras_model.h5')
+    keras_model = load_model('keras_model.h5')
     tokenizer = joblib.load('tokenizer.pkl')
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
     bert_model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
