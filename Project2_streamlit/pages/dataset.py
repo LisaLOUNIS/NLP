@@ -68,6 +68,7 @@ st.write(all_data.head())
 
 # Affichez les informations de l'ensemble de données
 st.subheader('Informations sur les données')
+st.write("Dimensions : ", all_data.shape)
 buffer = io.StringIO()
 all_data.info(buf=buffer)
 st.text(buffer.getvalue())
