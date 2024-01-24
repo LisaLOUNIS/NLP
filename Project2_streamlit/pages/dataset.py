@@ -46,6 +46,7 @@ def preprocess_text(df, text_column):
 @st.cache_data
 def load_data():
     all_data = pd.read_csv('data_scrapped_with_company.csv')
+    st.write(all_data.head())
     all_data['company'] = all_data['company'].str.replace(r'^https://www.opinion-assurances.fr/assureur-', '', regex=True)
     all_data['company'] = all_data['company'].str.replace(r'\.html.*$', '', regex=True)
     all_data['company'] = all_data['company'].str.replace('-', ' ', regex=True)
