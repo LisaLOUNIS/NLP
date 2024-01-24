@@ -4,6 +4,7 @@ import numpy as np
 import re
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from transformers import DistilBertTokenizer, TFDistilBertForSequenceClassification
 from tensorflow.keras.preprocessing.text import Tokenizer
  
 @st.experimental_memo(ttl=3600, max_entries=10)
@@ -12,16 +13,27 @@ def load_models():
     tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
     model = load_model('keras_model.h5')
     tokenizer = joblib.load('tokenizer.pkl')
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+    bert_model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
+    return rf_model, tfidf_vectorizer, keras_model, tokenizer, bert_model
     return rf_model, tfidf_vectorizer, model, tokenizer
  
  
-rf_model, tfidf_vectorizer, keras_model, tokenizer = load_models()
+rf_model, tfidf_vectorizer, keras_model, tokenizer,bert_model = load_models()
  
 # Fonctions pour l'analyse des sentiments
 def predict_sentiment_rf(review):
     review_vector = tfidf_vectorizer.transform([review])
     prediction = rf_model.predict(review_vector)
     return prediction[0]
+
+
+def predict_sentiment_bert(review):
+    inputs = tokenizer(review, return_tensors="tf", truncation=True, padding=True, max_length=512)
+    outputs = bert_model(inputs)
+    prediction = np.argmax(outputs.logits, axis=1)
+    sentiment_labels = ['negatif', 'neutre', 'positif']  # Ajustez en fonction de votre configuration
+    return sentiment_labels[prediction[0]]
  
 # Charger le tokenizer
 tokenizer = joblib.load('tokenizer.pkl')
@@ -52,8 +64,12 @@ model_choice = st.selectbox("Choisissez le modèle de prédiction", ["Random For
 if st.button('Prédire le Sentiment'):
     if model_choice == "Random Forest":
         sentiment = predict_sentiment_rf(user_review)
-    else:  # Keras
+
+    elif model_choice == "Keras":  # Keras
         sentiment = predict_sentiment_keras(user_review)
-    st.write(f"Le sentiment prédit est : {sentiment}")
+        st.write(f"Le sentiment prédit est : {sentiment}")
+    else: 
+        sentiment = predict_sentiment_bert(user_review)
+        st.write(f"Le sentiment prédit est : {sentiment}")
  
  
