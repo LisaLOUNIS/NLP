@@ -54,7 +54,7 @@ def load_data():
     all_data = preprocess_text(all_data, 'review_en')
     return all_data
 
-print(os.getcwd())
+st.write(os.getcwd())
 all_data = load_data()
 
 
