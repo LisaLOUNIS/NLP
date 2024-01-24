@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 nltk.download('stopwords') 
 nltk.download('wordnet')
+import string
 
 import matplotlib.pyplot as plt
 import seaborn as sns
