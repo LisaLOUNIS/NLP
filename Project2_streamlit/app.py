@@ -23,11 +23,14 @@ def predict_sentiment_rf(review):
     prediction = rf_model.predict(review_vector)
     return prediction[0]
  
+# Charger le tokenizer
+tokenizer = joblib.load('tokenizer.pkl')
+
 def preprocess_review(review):
     review = review.lower()
     review = re.sub(r'[^\w\s]', '', review)
     sequence = tokenizer.texts_to_sequences([review])
-    padded = pad_sequences(sequence, maxlen=67)
+    padded = pad_sequences(sequence, maxlen= tokenizer.max_length)
     return padded
  
 def predict_sentiment_keras(review):

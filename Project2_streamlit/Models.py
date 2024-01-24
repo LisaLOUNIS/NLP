@@ -163,23 +163,14 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import re
  
-def preprocess_text(text):
-    # Convertir en minuscules
-    text = text.lower()
-    # Supprimer la ponctuation
-    text = re.sub(r'[^\w\s]', '', text)
-    # Optionnel: autres étapes de nettoyage...
-    return text
- 
-# Appliquer la fonction de prétraitement à vos avis
-all_data['review_en_keras'] = all_data['review_en'].apply(preprocess_text)
+
  
 # Analyser la taille du vocabulaire
-word_counts = sum([len(set(review.split())) for review in all_data['review_en_keras']])
+word_counts = sum([len(set(review.split())) for review in all_data['review_en_no_stopwords']])
 print(f"Nombre total de mots uniques : {word_counts}")
  
 # Calculer la longueur moyenne ou médiane des avis
-review_lengths = [len(review.split()) for review in all_data['review_en_keras']]
+review_lengths = [len(review.split()) for review in all_data['review_en_no_stopwords']]
 average_length = sum(review_lengths) / len(review_lengths)
 median_length = sorted(review_lengths)[len(review_lengths) // 2]
 print(f"Longueur moyenne des avis : {average_length}")
@@ -193,7 +184,7 @@ max_length = int(average_length)
 # Création et adaptation du tokenizer
 tokenizer = Tokenizer(num_words=vocab_size)
 tokenizer.fit_on_texts(all_data['review_en_keras'])
-sequences = tokenizer.texts_to_sequences(all_data['review_en_keras'])
+sequences = tokenizer.texts_to_sequences(all_data['review_en_no_stopwords'])
 word_index = tokenizer.word_index
 print('Found %s unique tokens.' % len(word_index))
  
