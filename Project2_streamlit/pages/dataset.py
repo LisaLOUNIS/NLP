@@ -80,10 +80,3 @@ for col in numeric_columns:
     fig, ax = plt.subplots()
     all_data[col].hist(ax=ax)
     st.pyplot(fig)
-
-# Créez une matrice de corrélation
-st.subheader('Matrice de corrélation')
-corr_matrix = all_data.corr()
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax)
-st.pyplot(fig)
