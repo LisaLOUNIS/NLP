@@ -61,28 +61,28 @@ all_data = load_data()
 st.title('Statistiques du dataset')
 
 # Affichez les premières lignes de l'ensemble de données
-st.subheader('Aperçu des données')
-st.write(all_data.head())
+# st.subheader('Aperçu des données')
+# st.write(all_data.head())
 
-# Affichez les informations de l'ensemble de données
-st.subheader('Informations sur les données')
-st.write(all_data.info())
+# # Affichez les informations de l'ensemble de données
+# st.subheader('Informations sur les données')
+# st.write(all_data.info())
 
-# Affichez les statistiques descriptives de l'ensemble de données
-st.subheader('Statistiques descriptives')
-st.write(all_data.describe())
+# # Affichez les statistiques descriptives de l'ensemble de données
+# st.subheader('Statistiques descriptives')
+# st.write(all_data.describe())
 
-# Créez un histogramme pour chaque colonne numérique
-st.subheader('Histogrammes')
-numeric_columns = all_data.select_dtypes(['int64', 'float64']).columns
-for col in numeric_columns:
-    fig, ax = plt.subplots()
-    all_data[col].hist(ax=ax)
-    st.pyplot(fig)
+# # Créez un histogramme pour chaque colonne numérique
+# st.subheader('Histogrammes')
+# numeric_columns = all_data.select_dtypes(['int64', 'float64']).columns
+# for col in numeric_columns:
+#     fig, ax = plt.subplots()
+#     all_data[col].hist(ax=ax)
+#     st.pyplot(fig)
 
-# Créez une matrice de corrélation
-st.subheader('Matrice de corrélation')
-corr_matrix = all_data.corr()
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax)
-st.pyplot(fig)
+# # Créez une matrice de corrélation
+# st.subheader('Matrice de corrélation')
+# corr_matrix = all_data.corr()
+# fig, ax = plt.subplots(figsize=(10, 8))
+# sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax)
+# st.pyplot(fig)
