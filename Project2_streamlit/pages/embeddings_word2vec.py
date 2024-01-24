@@ -41,5 +41,5 @@ if method == 'PCA':
 else:
     result = result_tsne
 
-plot_results(result, words[:num_words])
+# plot_results(result, words[:num_words])
 
