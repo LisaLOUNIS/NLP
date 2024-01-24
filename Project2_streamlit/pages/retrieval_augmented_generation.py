@@ -1,5 +1,5 @@
 import streamlit as st
-from dataset import all_data
+from dataset import load_data
 import pandas as pd
 import numpy as np
 
@@ -20,7 +20,7 @@ def plot_results(result, words):
     st.pyplot(plt)  # Utilisez st.pyplot pour afficher le graphique dans Streamlit
 
 
-
+all_data = load_data()
 data = all_data['review_en_lemmatized']
 
 model_w2v = Word2Vec(data, min_count=1)
