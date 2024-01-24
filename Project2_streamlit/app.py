@@ -11,7 +11,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 def load_models():
     rf_model = joblib.load('sentiment_rf_model.pkl')
     tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
-    keras_model = load_model('keras_model.h5')
+    model = load_model('keras_model.h5')
     tokenizer = joblib.load('tokenizer.pkl')
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
     bert_model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
@@ -19,21 +19,13 @@ def load_models():
     return rf_model, tfidf_vectorizer, model, tokenizer
  
  
-rf_model, tfidf_vectorizer, keras_model, tokenizer,bert_model = load_models()
+rf_model, tfidf_vectorizer, keras_model, tokenizer = load_models()
  
 # Fonctions pour l'analyse des sentiments
 def predict_sentiment_rf(review):
     review_vector = tfidf_vectorizer.transform([review])
     prediction = rf_model.predict(review_vector)
     return prediction[0]
-
-
-def predict_sentiment_bert(review):
-    inputs = tokenizer(review, return_tensors="tf", truncation=True, padding=True, max_length=512)
-    outputs = bert_model(inputs)
-    prediction = np.argmax(outputs.logits, axis=1)
-    sentiment_labels = ['negatif', 'neutre', 'positif']  # Ajustez en fonction de votre configuration
-    return sentiment_labels[prediction[0]]
  
 # Charger le tokenizer
 tokenizer = joblib.load('tokenizer.pkl')
@@ -64,12 +56,8 @@ model_choice = st.selectbox("Choisissez le modèle de prédiction", ["Random For
 if st.button('Prédire le Sentiment'):
     if model_choice == "Random Forest":
         sentiment = predict_sentiment_rf(user_review)
-
-    elif model_choice == "Keras":  # Keras
+    else:  # Keras
         sentiment = predict_sentiment_keras(user_review)
-        st.write(f"Le sentiment prédit est : {sentiment}")
-    else: 
-        sentiment = predict_sentiment_bert(user_review)
-        st.write(f"Le sentiment prédit est : {sentiment}")
+    st.write(f"Le sentiment prédit est : {sentiment}")
  
  
