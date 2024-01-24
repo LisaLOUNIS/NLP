@@ -10,6 +10,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt')
 import string
+import os
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -53,7 +54,9 @@ def load_data():
     all_data = preprocess_text(all_data, 'review_en')
     return all_data
 
+print(os.getcwd())
 all_data = load_data()
+
 
 st.title('Statistiques du dataset')
 
