@@ -54,10 +54,12 @@ def load_data():
     all_data = all_data.drop_duplicates()
     all_data = all_data.dropna(subset=('review'))
     all_data = preprocess_text(all_data, 'review_en')
+
     return all_data
 
 all_data = load_data()
 st.write(all_data)
+
 st.title('Statistiques du dataset')
 
 # Affichez les premières lignes de l'ensemble de données
