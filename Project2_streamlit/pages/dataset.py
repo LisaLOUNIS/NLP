@@ -58,6 +58,7 @@ def load_data():
     return all_data
 
 all_data = load_data()
+st.write(all_data.info())
 
 st.title('Statistiques du dataset')
 
