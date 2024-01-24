@@ -13,9 +13,6 @@ def load_models():
     tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
     model = load_model('keras_model.h5')
     tokenizer = joblib.load('tokenizer.pkl')
-    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-    bert_model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
-    return rf_model, tfidf_vectorizer, keras_model, tokenizer, bert_model
     return rf_model, tfidf_vectorizer, model, tokenizer
  
  
