@@ -36,10 +36,11 @@ tsne = TSNE(n_components=2)
 result_tsne = tsne.fit_transform(word_vectors)
 
 method = st.selectbox('Méthode de réduction de dimensionnalité', ('PCA', 'TSNE'))
-if method == 'PCA':
-    result = result_pca
-else:
-    result = result_tsne
 
-# plot_results(result, words[:num_words])
+if st.button('Générer le plot'):
+    if method == 'PCA':
+        result = result_pca
+    else:
+        result = result_tsne
 
+    plot_results(result, words[:num_words])
