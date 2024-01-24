@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 nltk.download('stopwords') 
 nltk.download('wordnet')
+nltk.download('punkt')
 import string
 
 import matplotlib.pyplot as plt
