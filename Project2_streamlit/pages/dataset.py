@@ -70,7 +70,7 @@ st.write(all_data.head())
 st.subheader('Informations sur les données')
 buffer = io.StringIO()
 all_data.info(buf=buffer)
-st.write(buffer.getvalue())
+st.text(buffer.getvalue())
 
 # Affichez les statistiques descriptives de l'ensemble de données
 st.subheader('Statistiques descriptives')
