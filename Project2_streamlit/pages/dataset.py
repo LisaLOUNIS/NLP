@@ -10,7 +10,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt')
 import string
-import os
+import io
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -58,17 +58,18 @@ def load_data():
     return all_data
 
 all_data = load_data()
-st.write(all_data.info())
 
 st.title('Statistiques du dataset')
 
 # Affichez les premières lignes de l'ensemble de données
 st.subheader('Aperçu des données')
+
 st.write(all_data.head())
 
 # Affichez les informations de l'ensemble de données
 st.subheader('Informations sur les données')
-st.write(all_data.info())
+buffer = io.StringIO()
+st.write(all_data.info(buf=buffer.getvalue()))
 
 # Affichez les statistiques descriptives de l'ensemble de données
 st.subheader('Statistiques descriptives')
