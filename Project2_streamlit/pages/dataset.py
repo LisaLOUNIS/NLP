@@ -53,7 +53,7 @@ def load_data():
     all_data['company'] = all_data['company'].str.replace('-', ' ', regex=True)
     all_data = all_data.drop_duplicates()
     all_data = all_data.dropna(subset=('review'))
-    all_data.reset_index(inplace=True)
+    all_data.reset_index(drop=True, inplace=True)
     all_data = preprocess_text(all_data, 'review_en')
 
     return all_data
