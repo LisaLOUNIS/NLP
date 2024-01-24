@@ -1,5 +1,5 @@
 import streamlit as st
-from dataset import load_data
+from pages.dataset import load_data
 import pandas as pd
 import numpy as np
 
