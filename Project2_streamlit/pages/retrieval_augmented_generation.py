@@ -1,5 +1,5 @@
 import streamlit as st
-import dataset
+from dataset import all_data
 import pandas as pd
 import numpy as np
 
@@ -21,7 +21,7 @@ def plot_results(result, words):
 
 
 
-data = dataset.all_data['review_en_lemmatized']
+data = all_data['review_en_lemmatized']
 
 model_w2v = Word2Vec(data, min_count=1)
 words = list(model_w2v.wv.key_to_index)
